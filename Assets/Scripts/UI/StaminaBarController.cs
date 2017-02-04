@@ -10,6 +10,8 @@ public class StaminaBarController : MonoBehaviour {
 		
 	// Update is called once per frame
 	void Update () {
-        fillImage.fillAmount = Mathf.Clamp(PlayerController.localPlayer.Stamina, 0, 1);
+        if (PlayerController.localPlayer) {
+            fillImage.fillAmount = Mathf.Clamp(PlayerController.localPlayer.Stamina, 0, 1);
+        }
 	}
 }
