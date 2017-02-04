@@ -4,12 +4,19 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class PlayerController : NetworkBehaviour {
+
     //Local player (client)
     public static PlayerController localPlayer;
 
     [SerializeField]
     private Camera mainCamera;
 
+    #region GENERAL MOVEMENT
+    /// <summary>
+    /// This is the general movement multiplier.
+    /// Other multipliers multiply this and this multiply the speed.
+    /// </summary>
+    private float movementMultiplier = 1f;
     [SerializeField]
     private float speed = 250f;
     [SerializeField]
@@ -21,11 +28,20 @@ public class PlayerController : NetworkBehaviour {
     [SerializeField]
     private Rigidbody playerBody;
     private Vector3 forward;
+    #endregion
+
+    #region STAMINA
     private float stamina = 1;
     public float Stamina { get { return stamina; } }
     private bool running = false;
     [SerializeField]
+    [Tooltip("Multiplier for when sanic is boosting.")]
     private float runningSpeed = 2;
+    #endregion
+
+    [SerializeField]
+    [Tooltip("Multiplier for when sanic is airborne.")]
+    private float airControlMult = 0.1f;
 
     //Get sanic collision events
     private CollisionReporter reporter;
@@ -54,14 +70,25 @@ public class PlayerController : NetworkBehaviour {
             stamina += 0.05f;
         }
 
-        if (Input.GetAxis("Vertical") > 0f && isOnGround) {
+        if (Input.GetAxis("Vertical") != 0f) {
+            //Set the input value
+            movementMultiplier = MapAxis(Input.GetAxis("Vertical"));
+
+            Debug.Log("Vert: "+ movementMultiplier);
+
+            //Add the speed
+            movementMultiplier *= (running ? runningSpeed : speed);
+
+            Debug.Log("Run: " + movementMultiplier);
+
+            //Ground control
+            movementMultiplier *= (isOnGround ? 1f : airControlMult);
+
+            Debug.Log("Air: " + movementMultiplier);
+
             forward = Vector3.ProjectOnPlane(mainCamera.transform.forward, Vector3.up);
-            if (running) {
-                playerBody.AddForce(forward * runningSpeed * speed * Time.deltaTime, force);
-            }
-            else {
-                playerBody.AddForce(forward * speed * Time.deltaTime, force);
-            }
+            playerBody.AddForce(forward * runningSpeed * movementMultiplier * Time.deltaTime, force);
+
             isOnGround = false;
         }
 	}
@@ -70,5 +97,9 @@ public class PlayerController : NetworkBehaviour {
         ContactPoint contactPoint = collisionInfo.contacts[0];
         //Debug.Log(contactPoint.normal);
         isOnGround = contactPoint.normal.y > groundSlope;
+    }
+
+    private float MapAxis(float val) {
+        return (val > 0f ? 1f : (val < 0f ? -1f : 0f));
     }
 }
