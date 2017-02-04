@@ -74,17 +74,17 @@ public class PlayerController : NetworkBehaviour {
             //Set the input value
             movementMultiplier = MapAxis(Input.GetAxis("Vertical"));
 
-            Debug.Log("Vert: "+ movementMultiplier);
+            //Debug.Log("Vert: "+ movementMultiplier);
 
             //Add the speed
             movementMultiplier *= (running ? runningSpeed : speed);
 
-            Debug.Log("Run: " + movementMultiplier);
+            //Debug.Log("Run: " + movementMultiplier);
 
             //Ground control
             movementMultiplier *= (isOnGround ? 1f : airControlMult);
 
-            Debug.Log("Air: " + movementMultiplier);
+            //Debug.Log("Air: " + movementMultiplier);
 
             forward = Vector3.ProjectOnPlane(mainCamera.transform.forward, Vector3.up);
             playerBody.AddForce(forward * runningSpeed * movementMultiplier * Time.deltaTime, force);
