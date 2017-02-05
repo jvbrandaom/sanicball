@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 967187c3ff628b543a3921091ec4f0e2
+timeCreated: 1486267688
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Italics_and_F____it
+  fontNames:
+  - Italics_and_F____it
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

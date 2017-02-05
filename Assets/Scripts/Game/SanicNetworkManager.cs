@@ -11,6 +11,15 @@ public class SanicNetworkManager : NetworkManager {
     /// </summary>
     private string playerName;
 
+    /// <summary>
+    /// Self reference
+    /// </summary>
+    internal static SanicNetworkManager instance;
+
+    void Start() {
+        instance = this;
+    }
+
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId, NetworkReader extraMessage) {
         base.OnServerAddPlayer(conn, playerControllerId);
 
