@@ -101,6 +101,9 @@ public class PlayerController : NetworkBehaviour {
 
         //Get the player name
         if (display) {
+            if(DisplayName == "") {
+                DisplayName = NameGen.GenerateName(Random.Range(4,7));
+            }
             display.text = DisplayName;
         }
         name = "p"+netId.Value+"_"+displayName;
@@ -211,5 +214,11 @@ public class PlayerController : NetworkBehaviour {
 
     private float MapAxis(float val) {
         return (val > 0f ? 1f : (val < 0f ? -1f : 0f));
+    }
+
+    public void Teleport(Vector3 to) {
+        playerBody.isKinematic = true;
+        playerBody.transform.position = to;
+        playerBody.isKinematic = false;
     }
 }
