@@ -63,6 +63,7 @@ public class GameMode : NetworkBehaviour {
                 state = GAMESTATE.RUNNING;
                 timerDisplay.enabled = false;
                 RespawnAllPlayers();
+                playerWon = "";//Reset match display
             }
         }
     }
@@ -70,8 +71,13 @@ public class GameMode : NetworkBehaviour {
 	private void PlayerWon(string value) {
         playerWon = value;
         if (winDisplay) {
-            winDisplay.enabled = true;
-            winDisplay.text = "Player " + playerWon + " won!";
+
+            if (playerWon.Length > 0) {
+                winDisplay.enabled = true;
+                winDisplay.text = "Player " + playerWon + " won!";
+            }else {
+                winDisplay.enabled = false;
+            }
         }
     }
 }

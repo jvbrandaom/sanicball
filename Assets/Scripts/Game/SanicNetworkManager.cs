@@ -25,7 +25,11 @@ public class SanicNetworkManager : NetworkManager {
 
         //Later we will need to receive steam ID here to fetch game names for each user
         if (extraMessage != null) {
-            conn.playerControllers[playerControllerId].gameObject.GetComponent<PlayerController>().DisplayName = extraMessage.ReadString();
+            string pname = extraMessage.ReadString();
+            if(pname.Length == 0) {
+                pname = NameGen.GenerateName(Random.Range(4,7));
+            }
+            conn.playerControllers[playerControllerId].gameObject.GetComponent<PlayerController>().DisplayName = pname;
         }
     }
 
