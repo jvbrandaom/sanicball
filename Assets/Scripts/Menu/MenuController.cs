@@ -17,6 +17,9 @@ public class MenuController : MonoBehaviour {
     [SerializeField]
     private InputField addressField;
 
+    [SerializeField]
+    private GameObject controlsPanel;
+
     /// <summary>
     /// Call this when the client wants to join a server
     /// </summary>
@@ -32,5 +35,9 @@ public class MenuController : MonoBehaviour {
     public void HostMatchBtn() {
         SanicNetworkManager.instance.SetClientPlayerName(clientNameField.text);
         SanicNetworkManager.instance.StartHost();
+    }
+
+    public void ToogleControlPanel() {
+	controlsPanel.SetActive(!controlsPanel.activeSelf);
     }
 }
