@@ -77,7 +77,7 @@ public class PlayerController : NetworkBehaviour {
         if (playerBody) {
             model = playerBody.gameObject;
             sanicRenderer = model.GetComponent<Renderer>();
-            sanicMaterial = sanicRenderer.sharedMaterial;
+            sanicMaterial = sanicRenderer.material;
             sanicMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
         }
 
