@@ -11,6 +11,20 @@ public class PlayerController : NetworkBehaviour {
     [SerializeField]
     private Camera mainCamera;
 
+    #region EFFECTS
+    [SerializeField]
+    private ParticleSystem boostParticles;
+    private ParticleSystem.EmissionModule emission;
+
+    [SerializeField]
+    private Light playerGlowLight;
+
+    GameObject model;
+    Renderer sanicRenderer;
+    Material sanicMaterial;
+    float emissionIntensity = 0f;
+    #endregion
+
     #region GENERAL MOVEMENT
     /// <summary>
     /// This is the general movement multiplier.
@@ -58,16 +72,77 @@ public class PlayerController : NetworkBehaviour {
         }else {
             Debug.LogError("No collision reporter!");
         }
+
+        //Get the player model
+        if (playerBody) {
+            model = playerBody.gameObject;
+            sanicRenderer = model.GetComponent<Renderer>();
+            sanicMaterial = sanicRenderer.sharedMaterial;
+            sanicMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+        }
+
+        //Get the effect emission module
+        if (boostParticles) {
+            emission = boostParticles.emission;
+            if (emission.rateOverDistance.constant > 0) {
+                emission.rateOverDistance = 0;
+            }
+        }
+    }
+
+    void SetEmission(float intensity) {
+        sanicMaterial.SetColor("_EmissionColor", Color.white * intensity);
+        DynamicGI.UpdateMaterials(sanicRenderer);
+        DynamicGI.UpdateEnvironment();
     }
 	
 	void Update () {
+        //Run state
         if (Input.GetKey(KeyCode.LeftShift) && stamina > 0) {
             running = true;
             stamina -= 0.01f;
+        } else if(stamina <= 0){
+            running = false;
         }
         if (!Input.GetKey(KeyCode.LeftShift) && stamina <= 1) {
             running = false;
             stamina += 0.05f;
+        }
+
+        //Effects
+        if (running) {
+            //Particles
+            if (boostParticles && emission.rateOverDistance.constant == 0) {
+                //Debug.Log(playerBody.velocity.magnitude);
+                emission.rateOverDistance = Mathf.Clamp((2 * playerBody.velocity.magnitude), 8, 27);
+            }
+
+            //Lights
+            if (playerGlowLight) {
+                playerGlowLight.intensity = 0.1f + 2.5f * Mathf.Clamp01(playerBody.velocity.magnitude / 16f);
+            }
+
+            //Emission
+            if (sanicRenderer) {
+                emissionIntensity = Mathf.Clamp01(playerBody.velocity.magnitude / 16f);
+                SetEmission(emissionIntensity);
+            }
+        } else {
+            //Particles
+            if (boostParticles && emission.rateOverDistance.constant > 0) {
+                emission.rateOverDistance = 0;
+            }
+
+            //Lights
+            if (playerGlowLight && playerGlowLight.intensity > 0) {
+                playerGlowLight.intensity -= 0.02f;
+            }
+
+            //Emission
+            if (sanicRenderer && emissionIntensity > 0f) {
+                emissionIntensity -= 0.01f;
+                SetEmission(emissionIntensity);
+            }
         }
 
         if (Input.GetAxis("Vertical") != 0f) {
