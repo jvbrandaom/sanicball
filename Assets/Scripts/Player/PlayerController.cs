@@ -56,7 +56,7 @@ public class PlayerController : NetworkBehaviour {
     #region STAMINA
     private float stamina = 1;
     public float Stamina { get { return stamina; } }
-    [SyncVar]
+    [SyncVar(hook = "ReceiveRunning")]
     private bool running = false;
     [SerializeField]
     [Tooltip("Multiplier for when sanic is boosting.")]
@@ -101,8 +101,9 @@ public class PlayerController : NetworkBehaviour {
 
         //Get the player name
         if (display) {
-            display.text = displayName;
+            display.text = DisplayName;
         }
+        name = "p"+netId.Value+"_"+displayName;
     }
 
     void SetEmission(float intensity) {
@@ -116,7 +117,16 @@ public class PlayerController : NetworkBehaviour {
         running = state;
     }
 
-	void Update () {
+    void ReceiveRunning(bool state) {
+        if (!hasAuthority) running = state;
+    }
+
+    void Update () {
+        //Get the player name
+        if (display && !display.text.Equals(displayName)) {
+            display.text = DisplayName;
+        }
+
         //Run state
         if (hasAuthority) {
             if (Input.GetKey(KeyCode.LeftShift) && stamina > 0) {

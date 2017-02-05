@@ -39,6 +39,8 @@ namespace UnityStandardAssets.Cameras
 
         private void LateUpdate()
         {
+            if (!m_Pivot) return;
+
             // initially set the target distance
             float targetDist = m_OriginalDist;
 

@@ -9,15 +9,16 @@ public class GameMode : NetworkBehaviour {
     [SyncVar(hook = "PlayerWon")]
     private string playerWon = "Sanic";
 
+    [SerializeField]
     private Text winDisplay;
 
     [ServerCallback]
     void OnTriggerEnter(Collider collider) {
-        if (collider.tag.Equals("Player")) {
-            PlayerController controller = collider.gameObject.GetComponentInParent<PlayerController>();
-            if (controller) {
-                playerWon = controller.DisplayName;
-            }
+        //Debug.Log("Hi! "+ collider.transform.parent.gameObject.name);
+        PlayerController controller = collider.transform.parent.gameObject.GetComponent<PlayerController>();
+        if (controller) {
+            //Debug.Log("Player: " + controller.DisplayName);
+            playerWon = controller.DisplayName;
         }
     }
 
