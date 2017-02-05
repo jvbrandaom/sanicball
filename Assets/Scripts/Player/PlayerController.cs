@@ -11,6 +11,11 @@ public class PlayerController : NetworkBehaviour {
     [SerializeField]
     private Camera mainCamera;
 
+    #region PlayerInfo
+    private string displayName = "Sanic";
+    public string DisplayName { get { return displayName; } set { displayName = value; } }
+    #endregion
+
     #region EFFECTS
     [SerializeField]
     private ParticleSystem boostParticles;
@@ -47,6 +52,7 @@ public class PlayerController : NetworkBehaviour {
     #region STAMINA
     private float stamina = 1;
     public float Stamina { get { return stamina; } }
+    [SyncVar]
     private bool running = false;
     [SerializeField]
     [Tooltip("Multiplier for when sanic is boosting.")]
@@ -96,17 +102,27 @@ public class PlayerController : NetworkBehaviour {
         DynamicGI.UpdateEnvironment();
     }
 	
+    [Command]
+    void CmdSetRunning(bool state) {
+        running = state;
+    }
+
 	void Update () {
         //Run state
-        if (Input.GetKey(KeyCode.LeftShift) && stamina > 0) {
-            running = true;
-            stamina -= 0.01f;
-        } else if(stamina <= 0){
-            running = false;
-        }
-        if (!Input.GetKey(KeyCode.LeftShift) && stamina <= 1) {
-            running = false;
-            stamina += 0.05f;
+        if (hasAuthority) {
+            if (Input.GetKey(KeyCode.LeftShift) && stamina > 0) {
+                running = true;
+                stamina -= 0.01f;
+            } else if (stamina <= 0) {
+                running = false;
+            }
+            if (!Input.GetKey(KeyCode.LeftShift) && stamina <= 1) {
+                running = false;
+                stamina += 0.05f;
+            }
+
+            //Broadcast running state
+            CmdSetRunning(running);
         }
 
         //Effects
@@ -145,7 +161,7 @@ public class PlayerController : NetworkBehaviour {
             }
         }
 
-        if (Input.GetAxis("Vertical") != 0f) {
+        if (Input.GetAxis("Vertical") != 0f && hasAuthority) {
             //Set the input value
             movementMultiplier = MapAxis(Input.GetAxis("Vertical"));
 

@@ -32,11 +32,11 @@ public class PlayerAudioController : MonoBehaviour {
             //This is just too ugly
             if (Random.value > 0.5f) {
                 if (boostClip) {
-                    AudioSource.PlayClipAtPoint(boostClip, transform.position, 2f);
+                    AudioSource.PlayClipAtPoint(boostClip, transform.position, 1.8f);
                 }
             }else {
                 if (boostClip2) {
-                    AudioSource.PlayClipAtPoint(boostClip2, transform.position, 2f);
+                    AudioSource.PlayClipAtPoint(boostClip2, transform.position, 1.8f);
                 }
             }
         }
@@ -47,10 +47,10 @@ public class PlayerAudioController : MonoBehaviour {
         //Debug.Log(collisionInfo.relativeVelocity.magnitude);
         //collisionInfo.relativeVelocity.magnitude usually max at 20f
         mag = collisionInfo.relativeVelocity.magnitude;
-        if (bounceClip && mag > 1f && Time.realtimeSinceStartup-lastEmited > effectDelay) {
+        if (bounceClip && mag > 0.5f && Time.realtimeSinceStartup-lastEmited > effectDelay) {
             lastEmited = Time.realtimeSinceStartup;
             source.pitch = Mathf.Clamp(Random.value/2f + (mag / 8f), 0f, 2f);
-            source.volume = Mathf.Clamp01(0.01f + (mag / 30f));
+            source.volume = Mathf.Clamp01(0.01f + (mag / 40f));
             source.PlayOneShot(bounceClip);
         }
     }
