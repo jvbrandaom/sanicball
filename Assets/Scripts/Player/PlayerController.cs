@@ -212,4 +212,10 @@ public class PlayerController : NetworkBehaviour {
     private float MapAxis(float val) {
         return (val > 0f ? 1f : (val < 0f ? -1f : 0f));
     }
+
+    public void Teleport(Vector3 to) {
+        playerBody.isKinematic = true;
+        playerBody.transform.position = to;
+        playerBody.isKinematic = false;
+    }
 }
