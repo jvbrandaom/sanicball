@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Networking;
 
 public class PlayerController : NetworkBehaviour {
@@ -12,8 +13,11 @@ public class PlayerController : NetworkBehaviour {
     private Camera mainCamera;
 
     #region PlayerInfo
+    [SyncVar]
     private string displayName = "Sanic";
     public string DisplayName { get { return displayName; } set { displayName = value; } }
+    [SerializeField]
+    private Text display;
     #endregion
 
     #region EFFECTS
@@ -94,12 +98,17 @@ public class PlayerController : NetworkBehaviour {
                 emission.rateOverDistance = 0;
             }
         }
+
+        //Get the player name
+        if (display) {
+            display.text = displayName;
+        }
     }
 
     void SetEmission(float intensity) {
         sanicMaterial.SetColor("_EmissionColor", Color.white * intensity);
         DynamicGI.UpdateMaterials(sanicRenderer);
-        DynamicGI.UpdateEnvironment();
+        //DynamicGI.UpdateEnvironment();
     }
 	
     [Command]
