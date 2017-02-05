@@ -101,6 +101,9 @@ public class PlayerController : NetworkBehaviour {
 
         //Get the player name
         if (display) {
+            if(DisplayName == "") {
+                DisplayName = NameGen.GenerateName(Random.Range(4,7));
+            }
             display.text = DisplayName;
         }
         name = "p"+netId.Value+"_"+displayName;
