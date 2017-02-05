@@ -17,7 +17,9 @@ public class GameMode : NetworkBehaviour {
     //Match control
     [SerializeField]
     private float postMatchTime = 6f;
+    [SyncVar]
     private float matchEndedTime = 0f;
+    [SyncVar]
     private GAMESTATE state = GAMESTATE.RUNNING;
     [SerializeField]
     private Text timerDisplay;
@@ -59,7 +61,7 @@ public class GameMode : NetworkBehaviour {
             }
 
             //Reset match
-            if (timeToRestart > postMatchTime) {
+            if (timeToRestart > postMatchTime && isServer) {
                 state = GAMESTATE.RUNNING;
                 timerDisplay.enabled = false;
                 RespawnAllPlayers();

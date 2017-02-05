@@ -143,6 +143,12 @@ public class PlayerController : NetworkBehaviour {
                 stamina += 0.05f;
             }
 
+            //Respawn
+            if (Input.GetKeyDown(KeyCode.R)) {
+                Transform start = SanicNetworkManager.instance.GetStartPosition();
+                Teleport(start.position);
+            }
+
             //Broadcast running state
             CmdSetRunning(running);
         }
@@ -217,6 +223,11 @@ public class PlayerController : NetworkBehaviour {
     }
 
     public void Teleport(Vector3 to) {
+        RpcTeleport(to);
+    }
+
+    [ClientRpc]
+    private void RpcTeleport(Vector3 to) {
         playerBody.isKinematic = true;
         playerBody.transform.position = to;
         playerBody.isKinematic = false;
