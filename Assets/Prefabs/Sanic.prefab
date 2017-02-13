@@ -1067,11 +1067,11 @@ MonoBehaviour:
   display: {fileID: 114364791558058620}
   boostParticles: {fileID: 198092522743519564}
   playerGlowLight: {fileID: 108965058958799170}
-  speed: 25
+  speed: 800
   force: 5
   groundSlope: 0.6
   playerBody: {fileID: 54346259959823728}
-  runningSpeed: 42
+  runningSpeed: 1200
   airControlMult: 0.25
 --- !u!114 &114651258150667466
 MonoBehaviour:

@@ -51,6 +51,7 @@ public class PlayerController : NetworkBehaviour {
     [SerializeField]
     private Rigidbody playerBody;
     private Vector3 forward;
+    private Vector3 right;
     #endregion
 
     #region STAMINA
@@ -124,7 +125,7 @@ public class PlayerController : NetworkBehaviour {
         if (!hasAuthority) running = state;
     }
 
-    void Update () {
+    void Update() {
         //Get the player name
         if (display && !display.text.Equals(displayName)) {
             display.text = DisplayName;
@@ -134,19 +135,21 @@ public class PlayerController : NetworkBehaviour {
         if (hasAuthority) {
             if (Input.GetKey(KeyCode.LeftShift) && stamina > 0) {
                 running = true;
-                stamina -= 0.01f;
+                stamina -= 0.35f * Time.deltaTime;
             } else if (stamina <= 0) {
                 running = false;
             }
             if (!Input.GetKey(KeyCode.LeftShift) && stamina <= 1) {
                 running = false;
-                stamina += 0.05f;
+                stamina += 0.3f * Time.deltaTime;
             }
 
             //Respawn
             if (Input.GetKeyDown(KeyCode.R)) {
                 Transform start = SanicNetworkManager.instance.GetStartPosition();
-                Teleport(start.position);
+                playerBody.isKinematic = true;
+                playerBody.transform.position = start.position;
+                playerBody.isKinematic = false;
             }
 
             //Broadcast running state
@@ -189,6 +192,7 @@ public class PlayerController : NetworkBehaviour {
             }
         }
 
+        //Front and back
         if (Input.GetAxis("Vertical") != 0f && hasAuthority) {
             //Set the input value
             movementMultiplier = MapAxis(Input.GetAxis("Vertical"));
@@ -206,11 +210,29 @@ public class PlayerController : NetworkBehaviour {
             //Debug.Log("Air: " + movementMultiplier);
 
             forward = Vector3.ProjectOnPlane(mainCamera.transform.forward, Vector3.up);
-            playerBody.AddForce(forward * runningSpeed * movementMultiplier * Time.deltaTime, force);
+            playerBody.AddForce(forward * movementMultiplier * Time.deltaTime, force);
 
             isOnGround = false;
         }
-	}
+
+        //Left right
+        if (Input.GetAxis("Horizontal") != 0f && hasAuthority) {
+            //Set the input value
+            movementMultiplier = MapAxis(Input.GetAxis("Horizontal"));
+
+            //Add the speed
+            movementMultiplier *= speed*0.5f;
+
+            //Ground control
+            movementMultiplier *= (isOnGround ? 1f : airControlMult);
+
+            right = Vector3.ProjectOnPlane(mainCamera.transform.right, Vector3.up);
+            playerBody.AddForce(right * movementMultiplier * Time.deltaTime, force);
+
+            isOnGround = false;
+        }
+
+    }
 
     void CollisionStay(Collision collisionInfo) {
         ContactPoint contactPoint = collisionInfo.contacts[0];
